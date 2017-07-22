@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cmeister2/eidolon.svg?branch=master)](https://travis-ci.org/cmeister2/eidolon)
+
 # eidolon
 A DNS server that balances queries amongst a number of servers
 

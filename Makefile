@@ -3,3 +3,6 @@ dev_docker:
 
 run_dev_docker:
 	@docker run -it -v $(PWD):/eidolon -w /eidolon eidolon bash
+
+docker_unbound:
+	@docker run -it -v $(PWD):/eidolon -w /eidolon eidolon ./unbound.sh
