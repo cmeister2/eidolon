@@ -7,6 +7,6 @@ mkdir -p ${UNBOUND_INSTALL}
 
 pushd unbound-1.6.4
 
-./configure --with-conf-file=${UNBOUND_INSTALL} --with-pythonmodule && make && make install
+./configure --prefix=${UNBOUND_INSTALL} --with-pythonmodule && make && make install
 
 popd
