@@ -1,0 +1,13 @@
+language: c
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - swig
+      - python-dev
+      - libexpat1-dev
+      - libssl-dev
+
+script:
+  - ./unbound.sh
