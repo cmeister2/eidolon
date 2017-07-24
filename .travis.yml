@@ -10,4 +10,4 @@ addons:
       - libssl-dev
 
 script:
-  - ./unbound.sh
+  - make compile_unbound
