@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOTDIR=$PWD
-UNBOUND_INSTALL=$ROOTDIR/unbound
+UNBOUND_INSTALL=$ROOTDIR/target
 
 mkdir -p ${UNBOUND_INSTALL}
 
