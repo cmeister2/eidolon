@@ -1,4 +1,5 @@
 target/
+.idea/
 
 # Ignore some autogen files
 unbound-1.6.4/contrib/libunbound.pc

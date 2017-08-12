@@ -24,4 +24,12 @@ then
   echo "Installation failed"
   exit 3
 fi
+
+# Copy the generated python module to the target as 'make install' does not do this.
+if ! cp -v pythonmod/unboundmodule.py ${UNBOUND_INSTALL}
+then
+  echo "Failed to copy python module to ${UNBOUND_INSTALL}"
+  exit 4
+fi
+
 popd
