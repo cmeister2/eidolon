@@ -1,5 +1,6 @@
 target/
 .idea/
+*.pyc
 
 # Ignore some autogen files
 unbound-1.6.4/contrib/libunbound.pc
@@ -7,3 +8,7 @@ unbound-1.6.4/contrib/unbound.service
 unbound-1.6.4/contrib/unbound.socket
 unbound-1.6.4/pythonmod/interface.h
 unbound-1.6.4/pythonmod/unboundmodule.py
+
+# Ignore some python files
+python/import.log
+python/resolvers.db
