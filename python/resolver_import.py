@@ -21,7 +21,7 @@ def resolver_import(args: argparse.Namespace):
     db = resolver_db.ResolverDB(args.database)
 
     # Get the IP addresses that we'll be testing
-    ip_addresses = get_ip_addresses(args)
+    ip_addresses = set(get_ip_addresses(args))
 
     # Convert all addresses to DNSResolver objects
     resolvers = [dnsresolver.DNSResolver(ip) for ip in ip_addresses]

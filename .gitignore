@@ -11,4 +11,4 @@ unbound-1.6.4/pythonmod/unboundmodule.py
 
 # Ignore some python files
 python/import.log
-python/resolvers.db
+python/*.db
