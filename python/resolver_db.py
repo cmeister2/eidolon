@@ -60,4 +60,3 @@ class ResolverDB(object):
         resolvers = [dnsresolver.DNSResolver(row[0])
                      for row in cursor]
         return resolvers
-

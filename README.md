@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/cmeister2/eidolon.svg?branch=master)](https://travis-ci.org/cmeister2/eidolon)
-
 # eidolon
 A DNS server that balances queries amongst a number of servers
 
@@ -9,10 +7,8 @@ The aim of this server is that DNS queries made to it should succeed in the over
 This is designed to be used in subdomain brute forcers so that much of the DNS logic of handling open resolvers can be abstracted away, and those tools can just query this server directly.
 
 # Design
-The current proposed design:
+This system comprises several parts:
+- A set of Python scripts to create a database of valid DNS resolver addresses
+- A Python script to create an nginx configuration script which load balances DNS queries amongst the valid DNS resolver addresses.
+- A Dockerfile to compose the nginx configuration script with the nginx:alpine Docker image.
 
-- A DNS server which supports programmatic resolution of domain names
-  - PowerDNS
-  - Unbound
-- A Python script which implements the DNS lookup logic
-- A Dockerfile to wrap this all up in a neat package.

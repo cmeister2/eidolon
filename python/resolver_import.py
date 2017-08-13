@@ -90,7 +90,7 @@ def get_ip_addresses(args: argparse.Namespace):
 
 
 def main():
-    """Main handling function. Wraps resolver_tester."""
+    """Main handling function. Wraps resolver_import."""
 
     stdout_fmt = logging.Formatter("%(asctime)s %(levelname)-5.5s %(message)s")
     stdout_handler = logging.StreamHandler(stream=sys.stdout)
