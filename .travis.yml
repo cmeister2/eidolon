@@ -1,0 +1,8 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+  - make use_gb_sql
+  - make build_eidolon
