@@ -21,9 +21,13 @@ def resolver_publicdns(args: argparse.Namespace):
     # Get a database for the resolvers
     db = resolver_db.ResolverDB(args.database)
 
-    # Download the associated target CSV file
-    target = ("http://public-dns.info/nameserver/{filename}.csv"
-              .format(filename=args.publicdns))
+    if args.publicdns == "global":
+        # Special target - download all servers
+        target = "https://public-dns.info/nameservers.csv"
+    else:
+        # Download the associated target CSV file
+        target = ("http://public-dns.info/nameserver/{filename}.csv"
+                  .format(filename=args.publicdns))
     r = requests.get(target)
 
     # If the download failed, exit here instead
