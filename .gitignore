@@ -5,3 +5,4 @@ target/
 
 import.log
 *.db
+working/nginx.conf
