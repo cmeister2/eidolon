@@ -1,21 +1,26 @@
 sudo: required
 
+env:
+  global:
+  - secure: p1cR51wIoMomd6V8gxzQmNjbyEzCVcLI31thMDVDd8QtgnrkswjTpE0IF2Yyqd7mW+cs9580g0bo1mKTWutbd58gkz2bgdAZmn5jn8eCvhmvTvFEc7I55FomPT5NloGlud4LPj1ApueDUqo6aXZqKuhfET8W0UqjcuiWPwqJTWZX4y/Hgf40P+kOPB2HsoScF6NaCVhBP7+lsTMGMGK51R+GfBhnrppKHoWfDaDYuoLJ/FE6xUeLIuo+EhCggbGxsDpB7Ts1RjEVkRjyUiWRz+ASCcCxNnbKZIUMSbCdIScH2M2bUUYsWkVgqH9KRQckvrxgMqQQ5Ykj1R37R7jK4RYUjW79mWe/Eo3GMOv3+SPqRIn0vejYuVeFgPlv1QxV8q5VNT8D96aKY6Gc9fWOCRfRwuN/1mg/kEVhUREBrFj23zQ+bWR2Fu5M6vCcBw2vLgeQO/JMvyPcY+qdlLDdA3sroPG8S1/4zQwKkE2bo5BVSc2QFpg7KaRSg1JZz7GEi2lAk5pFECxaxu47lSdrazX1HmG8z5kuNdda3Z//Prx4PuNhlijIka4L7mUhNsbkzz5p06cAXTWnJHQbygYzDaPoJWQ+BAWknMtqjDIyg+HJEOre5o5ntl3Gmvbu/nWk4/S6js91verxSpxsxRd40Oh3Rbl+Q8mg5yjW3pbKrBo=
+  - secure: TJDGLnmmnE8kVZj4h1iVfmGglymyQwO/maAQcXQbYSYf9dMnXBP3F5FCXkNK+yRVyGSZrlTxEXWvPB7o/dp/YqF2NpFuY7TM+U+Wusjm1j9bWc4EiEoFxcvm1+wt/vGquKBU06cplaHR1sX4/a+uqOkcCxqMnFqPn/9XyFnq6YhMrIP+ypxSCqrBu9QdIRlG36tSMQ16O5T+zrsws62njebHu4Z8M82o9ibaH8hk+yhvSKt10ftLfDw3+jB3XNHQkDrEzy1HsYw5HUoBdrSOMWOrYlWT+y3emnFk6XS6+MMm6IuovfTdRZ+rwj84+T6CSV8NHlwedxIUEAE0wrOZlQEHP4v/HbBTTyUWwz5xyIRK/z+mdwXTeOwjoMjrRz8TkF2voROrKb5dnMuGTG6T9lT+BDRvuVsNQNWsHPYF7J5N5nucS+0NIwHs8vSCwSoLK1wWetbx3cd7i+tVwfeJGB+aSvcYgsLzANTP4m6xLGceaTwGpO/OiTrKK6YvgyL56KKqOeXaOPG8KBPj/29ga/fPPuzgik4RoRI/pRsJLYSHQTsaftmtsdFeLS0uA6b3dBcrtq3DCQlDp1GnE0/8jnIQO2cjW0yAlFZAI8HLzlR/A8OVjwz4B5C4xKQo4r4paeGUk1NEtAzkp/xmz0oAfmhBIWYYEiHhoWEMSX/nTGk=
+  - secure: NJ27Ze/btHqxH19OkQrV7ireJ98KSfq0Y/roy8lv8Gp7X4OQIazaEWXUE5++VrZeykbSRRNt0QBSucaJ8B7+BMDrVRIHDW48canEVWMZH/y5goEoznpvfX7k+RCTedFaNRBwLENln03O2laClkEuEZ7dRHalMcy6TMB2jLQmSV81+u6JMMEVFriOa849eMK+iQ8hUn0q3bzOkR9wkQHm5vFnJNE8rV5YW6FgPwHdW+J3+33dakzwHNW5ySvtNEnwmwmAaAqlUoShbYWxZgqYqqNf67Ikc/CQlYStRLdqmAWF4EetM7mwTX3C42P97+ZCn9T0AiSmplR1VFPXGdSa+JTuA4e+KKDCk4rZ15yDFcGf/YdA162uVEHzwFzqIK2YJacH+uZxLjU1pdxaEy981X5j0TjDq1iidvm1SghLnR4Lyzn/QN1DileQTFkpLp/ArMHMCPhZCeiFCnp4bazA6zgBegNBy9YkMN31QoqhovF+uc8osEYsvpxTn5vqihJqy/mkJfwNjA9yOVhRhNI3svSb8PGiLeGaW3rwki6Q/zboDXPpHDbmQSawJX51PaBs9DnthmlvqgmpY0bvJzFNKC+OWgnudqhECDjkJvSZnD+6QgBfuTrWx+Iypcq2lVD479R7De+UxZ5Hec+7HcB7XtFzDHQ460+4hJaxROgF7Yo=
+
 language: python
-
 python:
-  - "3.5"
-
+- '3.5'
 services:
-  - docker
-
+- docker
 matrix:
   include:
   - env: DATA_SOURCE=gb
-
-install: "pip install -r requirements.txt"
-
+install: pip install -r requirements.txt
 script:
-  - ./python/resolver_publicdns.py --database ./working/resolvers.db --publicdns $DATA_SOURCE
-  - make build_eidolon
-  - docker images
-  - docker tag eidolon cmeister2/eidolon:$DATA_SOURCE
+- "./python/resolver_publicdns.py --database ./working/resolvers.db --publicdns $DATA_SOURCE"
+- make build_eidolon
+
+after_success:
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+- docker tag eidolon cmeister2/eidolon:$DATA_SOURCE
+- docker images
+- if [[ ${TRAVIS_BRANCH} == "master" ]]; then docker push cmeister2/eidolon:$DATA_SOURCE; fi
