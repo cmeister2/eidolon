@@ -2,12 +2,17 @@ sudo: required
 
 language: python
 
+python:
+  - "3.5"
+
 services:
   - docker
 
 matrix:
   include:
   - env: DATA_SOURCE=gb
+
+install: "pip install -r requirements.txt"
 
 script:
   - ./python/resolver_publicdns.py --database ./working/resolvers.db --publicdns $DATA_SOURCE
