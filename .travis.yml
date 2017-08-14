@@ -16,4 +16,5 @@ install: "pip install -r requirements.txt"
 
 script:
   - ./python/resolver_publicdns.py --database ./working/resolvers.db --publicdns $DATA_SOURCE
+  - export DOCKER_TAG=cmeister2/eidolon:$DATA_SOURCE
   - make build_eidolon
