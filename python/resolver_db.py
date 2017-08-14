@@ -30,6 +30,25 @@ class ResolverDB(object):
         self.conn.execute("REPLACE INTO resolvers VALUES (?, ?)", (key, 1))
         self.conn.commit()
 
+    def set_valid_many(self, resolvers: typing.List[dnsresolver.DNSResolver]):
+        if not self.cache:
+            self._load_cache()
+
+        sql_values = []
+
+        for resolver in resolvers:
+            key = resolver.ip_address
+            if key in self.cache and self.cache[key] == 0:
+                log.info("Setting %d as valid, was previously invalid", key)
+            else:
+                log.debug("Setting %s as valid", key)
+
+            self.cache[key] = 1
+            sql_values.append([key, 1])
+
+        self.conn.executemany("REPLACE INTO resolvers VALUES (?, ?)", sql_values)
+        self.conn.commit()
+
     def set_invalid(self, resolver: dnsresolver.DNSResolver):
         if not self.cache:
             self._load_cache()
