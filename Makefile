@@ -4,6 +4,7 @@ DOCKER_TAG ?= eidolon
 # Build target for the docker image
 build_eidolon: $(WORKING_DIR)/nginx.conf
 	@docker build -t $(DOCKER_TAG) -f eidolon.dockerfile .
+	@echo Built docker image $(DOCKER_TAG)
 
 $(WORKING_DIR)/nginx.conf: $(WORKING_DIR)/resolvers.db
 	@./python/generate_nginx_conf.py --database $< --outputfile $@
