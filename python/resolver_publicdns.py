@@ -15,6 +15,7 @@ import resolver_db
 log = logging.getLogger(__name__)
 
 IPV4_RE = re.compile("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}")
+THRESHOLD = 0.99
 
 
 def resolver_publicdns(args: argparse.Namespace):
@@ -45,7 +46,8 @@ def resolver_publicdns(args: argparse.Namespace):
     all_resolvers = list(csv.DictReader(decoded_content.splitlines(), delimiter=','))
     valid_resolvers = [dnsresolver.DNSResolver(res["ip"])
                        for res in all_resolvers
-                       if res["reliability"] == "1.00" and
+                       if res["reliability"] and
+                       float(res["reliability"]) >= THRESHOLD and
                        IPV4_RE.match(res["ip"])]
     db.set_valid_many(valid_resolvers)
 
