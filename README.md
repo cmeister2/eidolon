@@ -29,7 +29,7 @@ The following tags are supported for eidolon. The source of the nameserver data 
  - `gb`: https://public-dns.info/nameserver/gb.csv
  - `us`: https://public-dns.info/nameserver/us.csv
 
-Other countries can be added easily; send a pull request!
+Other countries can be added easily; raise an issue!
 
 # Design
 This system comprises several parts:
