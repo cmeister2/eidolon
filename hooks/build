@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -ex
+
+docker build --build-arg DATA_SOURCE=${DOCKER_TAG}  -t $IMAGE_NAME .

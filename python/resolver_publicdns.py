@@ -31,6 +31,9 @@ def resolver_publicdns(args: argparse.Namespace):
         # Download the associated target CSV file
         target = ("http://public-dns.info/nameserver/{filename}.csv"
                   .format(filename=args.publicdns))
+
+    log.info("Downloading target: %s", target)
+
     r = requests.get(target)
 
     # If the download failed, exit here instead
