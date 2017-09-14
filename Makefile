@@ -1,13 +1,11 @@
 WORKING_DIR := ./working
 DOCKER_TAG ?= eidolon
+DATA_SOURCE ?= global
 
 # Build target for the docker image
-build_eidolon: $(WORKING_DIR)/nginx.conf
-	@docker build -t $(DOCKER_TAG) -f eidolon.dockerfile .
+build_eidolon:
+	@docker build --build-arg DATA_SOURCE=$(DATA_SOURCE) -t $(DOCKER_TAG) .
 	@echo Built docker image $(DOCKER_TAG)
-
-$(WORKING_DIR)/nginx.conf: $(WORKING_DIR)/resolvers.db
-	@./python/generate_nginx_conf.py --database $< --outputfile $@
 
 use_gb_sql: ./data/publicdns_gb.sql
 	@cat $< | sqlite3 $(WORKING_DIR)/resolvers.db
