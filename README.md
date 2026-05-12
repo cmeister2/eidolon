@@ -1,38 +1,63 @@
 # eidolon
-A DNS server that load balances DNS queries among a set of public DNS nameservers.
 
-# Aims
-The aim of this server is that DNS queries made to it should succeed in the overwhelming majority of cases, even after receiving lots of requests. This is achieved by balancing the queries amongst a set of backend resolvers.
+A DNS server that load-balances DNS queries among a set of public DNS nameservers.
 
-This is designed to be used in subdomain brute forcers so that much of the DNS logic of handling open resolvers can be abstracted away, and those tools can just query this server directly.
+DNS queries are proxied via nginx's stream module to a round-robin pool of public resolvers sourced from [public-dns.info](https://public-dns.info). This is designed for use with subdomain brute-forcers, abstracting away resolver management.
 
-# How to run it
-You'll likely want to run eidolon like this:
-```
-docker run --rm -d -p 127.0.0.1:53:5353/udp cmeister2/eidolon:<tag>
-```
+## Quick start
 
-For example, to use US-only resolvers:
-```
-docker run --rm -d -p 127.0.0.1:53:5353/udp cmeister2/eidolon:us
-```
-
-UDP DNS queries can then be directed at 127.0.0.1:53 - e.g.
-```
+```sh
+docker run --rm -d -p 127.0.0.1:53:5353/udp ghcr.io/cmeister2/eidolon:global
 dig @127.0.0.1 google.com
 ```
 
-# Supported tags
-The following tags are supported for eidolon. The source of the nameserver data is linked to the right. 
+## Supported tags
 
- - `global`: https://public-dns.info/nameservers.csv
- - `gb`: https://public-dns.info/nameserver/gb.csv
- - `us`: https://public-dns.info/nameserver/us.csv
+| Tag      | Source                                    |
+|----------|-------------------------------------------|
+| `global` | https://public-dns.info/nameservers.csv   |
+| `gb`     | https://public-dns.info/nameserver/gb.csv |
+| `us`     | https://public-dns.info/nameserver/us.csv |
 
-Other countries can be added easily; raise an issue!
+Images are rebuilt weekly with fresh resolver data.
 
-# Design
-This system comprises several parts:
-- A set of Python scripts to create a database of valid DNS resolver addresses
-- A Python script to create an nginx configuration script which load balances DNS queries amongst the valid DNS resolver addresses.
-- A Dockerfile to compose the nginx configuration script with the nginx:alpine Docker image.
+### Adding a country
+
+Add an entry to `tags.json`:
+
+```json
+{
+  "de": "nameserver/de.csv"
+}
+```
+
+The CI and publish workflows pick it up automatically.
+
+## Development
+
+```sh
+pip install -e ".[dev]"
+pytest
+ruff check src/ tests/
+mypy src/
+```
+
+### Building locally
+
+```sh
+docker build --build-arg TAG=gb -t eidolon:gb .
+docker run --rm -d -p 127.0.0.1:5353:5353/udp eidolon:gb
+dig @127.0.0.1 -p 5353 google.com
+```
+
+## How it works
+
+1. Python downloads the CSV of public nameservers from public-dns.info
+2. Filters to IPv4 addresses with >= 99% reliability
+3. Generates an nginx stream config with all valid resolvers as upstreams
+4. The config is baked into an `nginx:alpine` Docker image via a multi-stage build
+
+## CI/CD
+
+- **CI**: Runs on every push/PR - lint, type check, tests, Docker build smoke test
+- **Publish**: Weekly scheduled build pushes multi-arch images (amd64/arm64) to GHCR

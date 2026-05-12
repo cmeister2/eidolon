@@ -1,0 +1,5 @@
+ip_address,name,as_number,as_org,country_code,city,version,error,dnssec,reliability,checked_at,created_at
+1.2.3.4,,12345,TestOrg,US,,,,false,1.00,2020-01-01T00:00:00Z,2020-01-01T00:00:00Z
+5.6.7.8,,12345,TestOrg,GB,,,,false,0.50,2020-01-01T00:00:00Z,2020-01-01T00:00:00Z
+2001:db8::1,,12345,TestOrg,GB,,,,true,1.00,2020-01-01T00:00:00Z,2020-01-01T00:00:00Z
+9.10.11.12,,12345,TestOrg,GB,,,,false,0.99,2020-01-01T00:00:00Z,2020-01-01T00:00:00Z

@@ -1,0 +1,54 @@
+name: Publish
+
+on:
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  read-tags:
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.tags.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: tags
+        run: echo "tags=$(jq -c 'keys' tags.json)" >> "$GITHUB_OUTPUT"
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: read-tags
+    strategy:
+      matrix:
+        tag: ${{ fromJson(needs.read-tags.outputs.tags) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get date stamp
+        id: date
+        run: echo "stamp=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: TAG=${{ matrix.tag }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ matrix.tag }}
+            ghcr.io/${{ github.repository }}:${{ matrix.tag }}-${{ steps.date.outputs.stamp }}
