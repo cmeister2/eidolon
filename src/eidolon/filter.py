@@ -2,6 +2,7 @@
 
 import csv
 import ipaddress
+import math
 from dataclasses import dataclass
 
 
@@ -32,18 +33,16 @@ def parse_resolvers(csv_text: str) -> list[Resolver]:
 def filter_resolvers(
     resolvers: list[Resolver],
     min_reliability: float = 0.99,
-    ipv4_only: bool = True,
 ) -> list[str]:
-    """Filter resolvers by reliability and IP version, returning sorted IPs."""
+    """Filter resolvers by reliability and valid IPv4, returning sorted IPs."""
     result: list[str] = []
     for r in resolvers:
-        if r.reliability < min_reliability:
+        if not math.isfinite(r.reliability) or r.reliability < min_reliability:
             continue
-        if ipv4_only:
-            try:
-                ipaddress.IPv4Address(r.ip)
-            except (ipaddress.AddressValueError, ValueError):
-                continue
+        try:
+            ipaddress.IPv4Address(r.ip)
+        except (ipaddress.AddressValueError, ValueError):
+            continue
         result.append(r.ip)
     result.sort()
     return result

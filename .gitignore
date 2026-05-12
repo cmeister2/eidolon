@@ -17,7 +17,8 @@ htmlcov/
 *.swp
 
 # Old artifacts
-env/
+.venv/
 target/
 *.db
 import.log
+nginx.conf

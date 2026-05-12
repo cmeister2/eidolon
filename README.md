@@ -45,17 +45,19 @@ mypy src/
 ### Building locally
 
 ```sh
-docker build --build-arg TAG=gb -t eidolon:gb .
+pip install .
+eidolon --tag gb --output nginx.conf
+docker build -t eidolon:gb .
 docker run --rm -d -p 127.0.0.1:5353:5353/udp eidolon:gb
 dig @127.0.0.1 -p 5353 google.com
 ```
 
 ## How it works
 
-1. Python downloads the CSV of public nameservers from public-dns.info
+1. The `eidolon` CLI downloads the CSV of public nameservers from public-dns.info
 2. Filters to IPv4 addresses with >= 99% reliability
 3. Generates an nginx stream config with all valid resolvers as upstreams
-4. The config is baked into an `nginx:alpine` Docker image via a multi-stage build
+4. The config is copied into an `nginx:alpine` Docker image
 
 ## CI/CD
 

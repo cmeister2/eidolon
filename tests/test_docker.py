@@ -44,7 +44,13 @@ def container_port() -> Generator[int, None, None]:
     assert DOCKER is not None
 
     subprocess.run(
-        [DOCKER, "build", "--build-arg", "TAG=global", "-t", IMAGE_NAME, "."],
+        ["eidolon", "--tag", "global", "--output", "nginx.conf"],
+        check=True,
+        timeout=120,
+    )
+
+    subprocess.run(
+        [DOCKER, "build", "-t", IMAGE_NAME, "."],
         check=True,
         timeout=300,
     )

@@ -84,3 +84,14 @@ def test_main_unknown_tag(tmp_path: Path) -> None:
     rc = main(["--tag", "xx", "--tags-file", str(tags_file), "--output", str(output)])
 
     assert rc == 1
+
+
+def test_main_malformed_tags_json(tmp_path: Path) -> None:
+    """Exit code 1 when tags.json contains invalid JSON."""
+    tags_file = tmp_path / "tags.json"
+    tags_file.write_text("{not valid json")
+
+    output = tmp_path / "nginx.conf"
+    rc = main(["--tag", "gb", "--tags-file", str(tags_file), "--output", str(output)])
+
+    assert rc == 1
