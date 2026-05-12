@@ -1,0 +1,7 @@
+ip,name,country_id,city,version,error,dnssec,reliability,checked_at,created_at
+1.2.3.4,,us,,,,false,1.00,,
+5.6.7.8,,gb,,,,false,0.50,,
+2001:db8::1,,gb,,,,false,1.00,,
+9.10.11.12,,gb,,,,false,0.99,,
+192.168.1.1,,us,,,,false,1.00,,
+10.0.0.1,,us,,,,false,0.98,,

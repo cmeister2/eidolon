@@ -1,0 +1,5 @@
+{
+  "global": "nameservers.csv",
+  "gb": "nameserver/gb.csv",
+  "us": "nameserver/us.csv"
+}

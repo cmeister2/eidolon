@@ -1,8 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Old artifacts
 env/
 target/
-.idea/
-*.pyc
-
-import.log
 *.db
-working/nginx.conf
+import.log
