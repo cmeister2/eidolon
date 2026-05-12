@@ -28,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     source.add_argument("--url", help="Explicit CSV URL to download")
     parser.add_argument(
         "--tags-file",
-        default=str(Path(__file__).resolve().parent.parent.parent / "tags.json"),
+        default="tags.json",
         help="Path to tags.json",
     )
     parser.add_argument("--output", required=True, help="Output path for nginx.conf")
@@ -46,7 +46,11 @@ def main(argv: list[str] | None = None) -> int:
         if not tags_path.exists():
             log.error("Tags file not found: %s", tags_path)
             return 1
-        tags = json.loads(tags_path.read_text())
+        try:
+            tags = json.loads(tags_path.read_text())
+        except json.JSONDecodeError:
+            log.error("Invalid JSON in tags file: %s", tags_path)
+            return 1
         csv_path = tags.get(args.tag)
         if csv_path is None:
             log.error("Unknown tag %r. Available: %s", args.tag, ", ".join(tags.keys()))

@@ -31,7 +31,7 @@ def test_parse_resolvers_missing_fields() -> None:
 
 
 def test_filter_ipv4_only() -> None:
-    """IPv6 addresses are excluded when ipv4_only is True."""
+    """IPv6 addresses are excluded."""
     resolvers = [
         Resolver(ip="1.2.3.4", reliability=1.0),
         Resolver(ip="2001:db8::1", reliability=1.0),
@@ -78,6 +78,27 @@ def test_filter_custom_threshold() -> None:
     ]
     result = filter_resolvers(resolvers, min_reliability=0.75)
     assert result == ["1.2.3.4"]
+
+
+def test_filter_nan_reliability() -> None:
+    """Resolvers with NaN reliability are excluded."""
+    resolvers = [
+        Resolver(ip="1.2.3.4", reliability=float("nan")),
+        Resolver(ip="5.6.7.8", reliability=1.0),
+    ]
+    result = filter_resolvers(resolvers)
+    assert result == ["5.6.7.8"]
+
+
+def test_filter_inf_reliability() -> None:
+    """Resolvers with infinite reliability are excluded."""
+    resolvers = [
+        Resolver(ip="1.2.3.4", reliability=float("inf")),
+        Resolver(ip="5.6.7.8", reliability=float("-inf")),
+        Resolver(ip="9.10.11.12", reliability=1.0),
+    ]
+    result = filter_resolvers(resolvers)
+    assert result == ["9.10.11.12"]
 
 
 def test_parse_resolvers_ip_address_column() -> None:
