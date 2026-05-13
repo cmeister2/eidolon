@@ -34,22 +34,52 @@ jobs:
       - name: Test
         run: pytest --cov=eidolon --cov-report=term-missing
 
-  docker-build:
+  generate-configs:
     runs-on: ubuntu-latest
     needs: [lint-and-test, read-tags]
+    outputs:
+      cache-key: ${{ steps.date.outputs.key }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Get cache key
+        id: date
+        run: echo "key=nginx-configs-$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+      - name: Restore config cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: configs/
+          key: ${{ steps.date.outputs.key }}
+      - if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.14"
+      - if: steps.cache.outputs.cache-hit != 'true'
+        name: Install eidolon
+        run: pip install .
+      - if: steps.cache.outputs.cache-hit != 'true'
+        name: Generate all configs
+        run: |
+          for tag in $(jq -r 'keys[]' tags.json); do
+            mkdir -p "configs/${tag}"
+            eidolon --tag "${tag}" --output "configs/${tag}/nginx.conf"
+          done
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [generate-configs, read-tags]
     strategy:
       fail-fast: false
       matrix:
         tag: ${{ fromJson(needs.read-tags.outputs.tags) }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - name: Restore config cache
+        uses: actions/cache/restore@v4
         with:
-          python-version: "3.14"
-      - name: Install eidolon
-        run: pip install .
-      - name: Generate nginx config
-        run: eidolon --tag ${{ matrix.tag }} --output nginx.conf
+          path: configs/
+          key: ${{ needs.generate-configs.outputs.cache-key }}
+      - run: cp configs/${{ matrix.tag }}/nginx.conf .
       - name: Build Docker image
         run: docker build -t eidolon:${{ matrix.tag }} .
 
