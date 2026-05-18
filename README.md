@@ -19,7 +19,10 @@ dig @127.0.0.1 google.com
 | `gb`     | https://public-dns.info/nameserver/gb.csv |
 | `us`     | https://public-dns.info/nameserver/us.csv |
 
-Images are rebuilt weekly with fresh resolver data.
+Images are rebuilt weekly with fresh resolver data. Two variants are published for each tag:
+
+- **Rolling**: `ghcr.io/cmeister2/eidolon:<tag>` — always the latest weekly build
+- **Date-stamped**: `ghcr.io/cmeister2/eidolon/<tag>:<YYYYMMDD>` — pinned to a specific weekly build, retained for 4 weeks
 
 ### Adding a country
 
@@ -31,7 +34,8 @@ Add an entry to `tags.json`:
 }
 ```
 
-The CI and publish workflows pick it up automatically.
+The CI and publish workflows pick it up automatically. The cleanup workflow's
+package list in `.github/workflows/cleanup.yml` must also be updated.
 
 ## Development
 

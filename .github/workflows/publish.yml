@@ -88,6 +88,9 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
+          # Rolling tag in the main package (e.g. ghcr.io/cmeister2/eidolon:gb)
+          # Date-stamped tag in a per-tag package (e.g. ghcr.io/cmeister2/eidolon/gb:20260518)
+          # The split allows the cleanup workflow to use keep-n-tagged per package.
           tags: |
             ghcr.io/${{ github.repository }}:${{ matrix.tag }}
-            ghcr.io/${{ github.repository }}:${{ matrix.tag }}-${{ steps.date.outputs.stamp }}
+            ghcr.io/${{ github.repository }}/${{ matrix.tag }}:${{ steps.date.outputs.stamp }}
