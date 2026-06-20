@@ -15,7 +15,7 @@ jobs:
     outputs:
       tags: ${{ steps.tags.outputs.tags }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - id: tags
         run: echo "tags=$(jq -c 'keys' tags.json)" >> "$GITHUB_OUTPUT"
 
@@ -25,7 +25,7 @@ jobs:
     outputs:
       cache-key: ${{ steps.date.outputs.key }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Get cache key
         id: date
         run: echo "key=nginx-configs-$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
@@ -58,7 +58,7 @@ jobs:
       matrix:
         tag: ${{ fromJson(needs.read-tags.outputs.tags) }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - name: Restore config cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
