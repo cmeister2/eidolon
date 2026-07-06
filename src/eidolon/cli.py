@@ -26,6 +26,7 @@ def main(argv: list[str] | None = None) -> int:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--tag", help="Tag name from tags.json (e.g. global, gb, us)")
     source.add_argument("--url", help="Explicit CSV URL to download")
+    source.add_argument("--file", help="Local CSV file to read")
     parser.add_argument(
         "--tags-file",
         default="tags.json",
@@ -41,30 +42,41 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
-    if args.tag:
-        tags_path = Path(args.tags_file)
-        if not tags_path.exists():
-            log.error("Tags file not found: %s", tags_path)
-            return 1
+    if args.file:
+        local_csv_path = Path(args.file)
+        log.info("Reading: %s", local_csv_path)
         try:
-            tags = json.loads(tags_path.read_text())
-        except json.JSONDecodeError:
-            log.error("Invalid JSON in tags file: %s", tags_path)
+            csv_text = local_csv_path.read_text()
+        except OSError:
+            log.exception("Failed to read CSV")
             return 1
-        csv_path = tags.get(args.tag)
-        if csv_path is None:
-            log.error("Unknown tag %r. Available: %s", args.tag, ", ".join(tags.keys()))
-            return 1
-        url = build_url(csv_path)
     else:
-        url = args.url
+        if args.tag:
+            tags_path = Path(args.tags_file)
+            if not tags_path.exists():
+                log.error("Tags file not found: %s", tags_path)
+                return 1
+            try:
+                tags = json.loads(tags_path.read_text())
+            except json.JSONDecodeError:
+                log.error("Invalid JSON in tags file: %s", tags_path)
+                return 1
+            remote_csv_path = tags.get(args.tag)
+            if remote_csv_path is None:
+                log.error(
+                    "Unknown tag %r. Available: %s", args.tag, ", ".join(tags.keys())
+                )
+                return 1
+            url = build_url(remote_csv_path)
+        else:
+            url = args.url
 
-    log.info("Downloading: %s", url)
-    try:
-        csv_text = fetch_csv(url)
-    except Exception:
-        log.exception("Failed to download CSV")
-        return 1
+        log.info("Downloading: %s", url)
+        try:
+            csv_text = fetch_csv(url)
+        except Exception:
+            log.exception("Failed to download CSV")
+            return 1
 
     resolvers = parse_resolvers(csv_text)
     ips = filter_resolvers(resolvers, min_reliability=args.min_reliability)

@@ -86,6 +86,18 @@ def test_main_unknown_tag(tmp_path: Path) -> None:
     assert rc == 1
 
 
+def test_main_with_file(tmp_path: Path) -> None:
+    """Read CSV from a local file without downloading it."""
+    csv_file = tmp_path / "resolvers.csv"
+    csv_file.write_text((FIXTURES_DIR / "sample.csv").read_text())
+
+    output = tmp_path / "nginx.conf"
+    rc = main(["--file", str(csv_file), "--output", str(output)])
+
+    assert rc == 0
+    assert "server 1.2.3.4:53;" in output.read_text()
+
+
 def test_main_malformed_tags_json(tmp_path: Path) -> None:
     """Exit code 1 when tags.json contains invalid JSON."""
     tags_file = tmp_path / "tags.json"
