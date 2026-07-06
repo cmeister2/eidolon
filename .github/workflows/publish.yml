@@ -19,36 +19,41 @@ jobs:
       - id: tags
         run: echo "tags=$(jq -c 'keys' tags.json)" >> "$GITHUB_OUTPUT"
 
-  generate-configs:
+  fetch-csvs:
     runs-on: ubuntu-latest
-    needs: read-tags
-    outputs:
-      cache-key: ${{ steps.date.outputs.key }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - name: Get cache key
-        id: date
-        run: echo "key=nginx-configs-$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
-      - name: Restore config cache
-        id: cache
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+      - uses: ./.github/actions/fetch-csvs
         with:
-          path: configs/
-          key: ${{ steps.date.outputs.key }}
-      - if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+          user-agent-prefix: eidolon-publish
+
+  generate-configs:
+    runs-on: ubuntu-latest
+    needs: [read-tags, fetch-csvs]
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - name: Download CSVs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: public-dns-csvs
+          path: csvs/
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.14"
-      - if: steps.cache.outputs.cache-hit != 'true'
-        name: Install eidolon
+      - name: Install eidolon
         run: pip install .
-      - if: steps.cache.outputs.cache-hit != 'true'
-        name: Generate all configs
+      - name: Generate all configs
         run: |
           for tag in $(jq -r 'keys[]' tags.json); do
             mkdir -p "configs/${tag}"
-            eidolon --tag "${tag}" --output "configs/${tag}/nginx.conf"
+            eidolon --file "csvs/${tag}.csv" --output "configs/${tag}/nginx.conf"
           done
+      - name: Upload configs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: nginx-configs
+          path: configs/**/nginx.conf
+          if-no-files-found: error
 
   publish:
     runs-on: ubuntu-latest
@@ -60,11 +65,11 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
-      - name: Restore config cache
-        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5
+      - name: Download configs
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
+          name: nginx-configs
           path: configs/
-          key: ${{ needs.generate-configs.outputs.cache-key }}
 
       - run: cp configs/${{ matrix.tag }}/nginx.conf .
 
