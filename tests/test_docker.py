@@ -1,5 +1,6 @@
 """Integration tests that build and query a live Docker container."""
 
+import os
 import random
 import shutil
 import subprocess
@@ -43,8 +44,12 @@ def container_port() -> Generator[int, None, None]:
     """Build the image, start a container on a random port, yield it, then clean up."""
     assert DOCKER is not None
 
+    source_args = ["--tag", "global"]
+    if global_csv := os.environ.get("EIDOLON_GLOBAL_CSV"):
+        source_args = ["--file", global_csv]
+
     subprocess.run(
-        ["eidolon", "--tag", "global", "--output", "nginx.conf"],
+        ["eidolon", *source_args, "--output", "nginx.conf"],
         check=True,
         timeout=120,
     )

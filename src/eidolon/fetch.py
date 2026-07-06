@@ -6,6 +6,7 @@ import time
 import requests
 
 BASE_URL = "https://public-dns.info/"
+USER_AGENT = "eidolon/0.1 (+https://github.com/cmeister2/eidolon)"
 
 log = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ def fetch_csv(url: str, timeout: int = 30, retries: int = 3) -> str:
     last_exc: Exception | None = None
     for attempt in range(retries):
         try:
-            r = requests.get(url, timeout=timeout)
+            r = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=timeout)
             r.raise_for_status()
             return r.content.decode("utf-8")
         except requests.ConnectionError as e:
