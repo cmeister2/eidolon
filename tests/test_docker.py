@@ -80,6 +80,7 @@ def container_port() -> Generator[int, None, None]:
     for _ in range(20):
         result = subprocess.run(
             [DOCKER, "inspect", "-f", "{{.State.Running}}", container_id],
+            check=False,
             capture_output=True,
             text=True,
         )
@@ -87,7 +88,7 @@ def container_port() -> Generator[int, None, None]:
             break
         time.sleep(0.5)
     else:
-        subprocess.run([DOCKER, "stop", container_id], capture_output=True)
+        subprocess.run([DOCKER, "stop", container_id], check=False, capture_output=True)
         pytest.fail("Container did not start in time")
 
     # Brief pause for nginx to bind
@@ -95,7 +96,9 @@ def container_port() -> Generator[int, None, None]:
 
     yield port
 
-    subprocess.run([DOCKER, "stop", container_id], capture_output=True, timeout=30)
+    subprocess.run(
+        [DOCKER, "stop", container_id], check=False, capture_output=True, timeout=30
+    )
 
 
 def _dig(
@@ -114,6 +117,7 @@ def _dig(
             "+time=2",
             "+tries=1",
         ],
+        check=False,
         capture_output=True,
         text=True,
         timeout=30,
